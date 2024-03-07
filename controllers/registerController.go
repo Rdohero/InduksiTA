@@ -71,7 +71,6 @@ func Register(c *gin.Context) {
 			return
 		}
 
-		// Respond
 		c.JSON(http.StatusOK, gin.H{
 			"Status": "Succes!",
 		})

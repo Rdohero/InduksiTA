@@ -12,13 +12,10 @@ import (
 
 func Login(c *gin.Context) {
 	var body struct {
-		Email          string `json:"email"`
-		FirstName      string `json:"first_name"`
-		LastName       string `json:"last_name"`
-		Password       string `json:"password"`
-		NoHandphone    string `json:"no_handphone"`
-		Role           int    `json:"role"`
-		EmailHandphone string
+		Email    string `json:"email"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Role     int    `json:"role"`
 	}
 
 	if c.Bind(&body) != nil {
@@ -30,7 +27,7 @@ func Login(c *gin.Context) {
 	}
 
 	var user models.User
-	initializers.DB.Preload("Role").First(&user, "email = ?", body.EmailHandphone)
+	initializers.DB.Preload("Role").First(&user, "email = ?", body.Email)
 
 	errPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 

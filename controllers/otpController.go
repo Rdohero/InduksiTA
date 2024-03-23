@@ -65,7 +65,7 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	err := smtp.SendMail(address, auth, "adm.moluccanskytravel@gmail.com", to, msg)
 
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"Status": "Error",
 			"Error":  err.Error(),
 		})

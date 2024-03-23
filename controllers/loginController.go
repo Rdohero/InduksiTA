@@ -15,7 +15,6 @@ func Login(c *gin.Context) {
 		Email    string `json:"email"`
 		Username string `json:"username"`
 		Password string `json:"password"`
-		Role     int    `json:"role"`
 	}
 
 	if c.Bind(&body) != nil {

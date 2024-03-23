@@ -67,7 +67,7 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": "Error",
-			"Error":  "Error Sending Email",
+			"Error":  err.Error(),
 		})
 		return
 	}

@@ -63,7 +63,9 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 		"From: " + "Items Gate" + "\n" +
 			"To: " + strings.Join(to, ",") + "\n" +
 			"Cc: " + strings.Join(cc, ",") + "\n" +
-			"Subject: " + subject + "\n\n" +
+			"Subject: " + subject + "\r\n" +
+			"Content-Type: text/html; charset=\"UTF-s8\"\r\n" +
+			"\r\n" +
 			HTMLbody)
 	err := smtp.SendMail(address, auth, "Items Gate", to, msg)
 

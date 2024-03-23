@@ -60,7 +60,7 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	auth := smtp.PlainAuth("", "rojaridho8888@gmail.com", "dgoy oamb xqiq fzmu", host)
 	// Construct the message
 	msg := []byte(
-		"From: " + "Items Gate" + "\n" +
+		"From: " + "Items Gate  <ItemsGate@gmail.com>" + "\n" +
 			"To: " + strings.Join(to, ",") + "\n" +
 			"Cc: " + strings.Join(cc, ",") + "\n" +
 			"Subject: " + subject + "\r\n" +

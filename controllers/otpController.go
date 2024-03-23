@@ -62,7 +62,7 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 			"Content-Type: text/html; charset=\"UTF-s8\"\r\n" +
 			"\r\n" +
 			HTMLbody)
-	err := smtp.SendMail(address, auth, "rojaridho8888@gmail.com", to, msg)
+	err := smtp.SendMail(address, auth, "Items Gate", to, msg)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

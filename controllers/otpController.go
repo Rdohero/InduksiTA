@@ -12,6 +12,7 @@ import (
 	"net/smtp"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -50,6 +51,7 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 			<p>` + otpStr + `</p>
 		</html>`
 	to := []string{Resend.Email}
+	cc := []string{Resend.Email}
 	// SMTP - Simple Mail Transfer Protocol
 	host := "smtp.gmail.com"
 	port := "587"
@@ -58,9 +60,10 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	auth := smtp.PlainAuth("", "rojaridho8888@gmail.com", "dgoy oamb xqiq fzmu", host)
 	// Construct the message
 	msg := []byte(
-		"Subject: " + subject + "\r\n" +
-			"Content-Type: text/html; charset=\"UTF-s8\"\r\n" +
-			"\r\n" +
+		"From: " + "Items Gate" + "\n" +
+			"To: " + strings.Join(to, ",") + "\n" +
+			"Cc: " + strings.Join(cc, ",") + "\n" +
+			"Subject: " + subject + "\n\n" +
 			HTMLbody)
 	err := smtp.SendMail(address, auth, "Items Gate", to, msg)
 

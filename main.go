@@ -34,6 +34,10 @@ func main() {
 	router.POST("/resendOtp", controllers.ResendOtpEmailPassVer)
 	router.POST("/emailve", controllers.OtpEmailVer)
 
+	viPay := router.Group("/viPay")
+
+	viPay.POST("/profile", controllers.GetProfile)
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Pong")
 	})

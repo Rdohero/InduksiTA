@@ -37,6 +37,7 @@ func main() {
 	viPay := router.Group("/viPay")
 
 	viPay.POST("/profile", controllers.GetProfile)
+	viPay.POST("/game-feature", controllers.GetGameOrder)
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Pong")

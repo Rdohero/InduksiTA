@@ -40,6 +40,10 @@ func main() {
 	viPay.POST("/game-feature", controllers.GetGameOrder)
 	viPay.POST("/list-game-price", controllers.ListGameHarga)
 	viPay.POST("/get-nick-game", controllers.GetNickGame)
+	viPay.POST("/top-up", controllers.TopUpGame)
+	viPay.POST("/top-up-prepaid", controllers.TopUpPrepaid)
+	viPay.POST("/list-prepaid-price", controllers.ListPrepaid)
+	viPay.POST("/list-prepaid-order", controllers.GetPrepaidOrder)
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Pong")

@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 	"math/rand"
 	"net/http"
 	"net/smtp"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -82,80 +80,6 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	})
 }
 
-func OtpEmailVer(c *gin.Context) {
-	var Otp struct {
-		Email string
-		Otp   string
-	}
-	c.Bind(&Otp)
-
-	var token2, err1 = DapatkanOtpString(Otp.Otp)
-	if token2 == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": err1.Error(),
-		})
-		return
-	}
-
-	token, _ := jwt.Parse(token2, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		return []byte(os.Getenv("SECRET")), nil
-	})
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		// Check the exp
-		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			HapusOtp(Otp.Otp)
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"Error": "Otp Has Been Expired",
-			})
-			return
-		}
-
-		user, err := getUserByEmail(claims["email"].(string))
-
-		var userUpdate []models.User
-
-		if Otp.Email == user.Email {
-			if Otp.Otp == strconv.Itoa(int(claims["otp"].(float64))) {
-				// update user.Active to true
-				err = MakeActive(user.UserID)
-
-				HapusOtp(Otp.Otp)
-
-				initializers.DB.First(&userUpdate, user.UserID)
-				if err != nil {
-					c.JSON(http.StatusUnauthorized, gin.H{
-						"Error": "Please try verification email again",
-					})
-					return
-				}
-				c.JSON(http.StatusOK, gin.H{
-					"Status": "Succes",
-				})
-				return
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"Error": "Otp Not Valid",
-				})
-			}
-		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"Error": "Otp Not Valid",
-			})
-		}
-	} else {
-		HapusOtp(Otp.Otp)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"Error": "Otp Has Been Expired",
-		})
-		return
-	}
-}
-
 func getUserByEmail(email string) (*models.User, error) {
 	var u models.User
 	result := initializers.DB.Where("email = ?", email).First(&u)
@@ -163,20 +87,4 @@ func getUserByEmail(email string) (*models.User, error) {
 		return nil, result.Error
 	}
 	return &u, nil
-}
-
-func MakeActive(userID uint) error {
-	var u models.User
-	if err := initializers.DB.First(&u, userID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return fmt.Errorf("User not found")
-		}
-		return err
-	}
-
-	u.Active = true
-	if err := initializers.DB.Save(&u).Error; err != nil {
-		return err
-	}
-	return nil
 }

@@ -10,9 +10,9 @@ import (
 
 func Register(c *gin.Context) {
 	var body struct {
-		Email    string `json:"email"`
 		Username string `json:"username"`
 		Password string `json:"password"`
+		Branch   string `json:"branch"`
 	}
 
 	if c.Bind(&body) != nil {
@@ -30,20 +30,6 @@ func Register(c *gin.Context) {
 		})
 	}
 
-	checkEmail := checkEmailValid(body.Email)
-	if checkEmail != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": checkEmail.Error(),
-		})
-	}
-
-	checkEmailD := checkEmailDomain(body.Email)
-	if checkEmailD != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": checkEmailD.Error(),
-		})
-	}
-
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 14)
 
 	if err != nil {
@@ -54,12 +40,11 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	if checkPassword == nil && checkEmail == nil && checkEmailD == nil {
+	if checkPassword == nil {
 		user := models.User{
-			Email:    body.Email,
 			Username: body.Username,
 			Password: string(hash),
-			Active:   false,
+			Branch:   body.Branch,
 		}
 		result := initializers.DB.Create(&user)
 

@@ -26,13 +26,27 @@ func main() {
 	router.Use(cors.New(config))
 
 	userAuth := router.Group("/userAuth")
+	category := router.Group("/category")
 	userAuth.Use(middleware.RequiredAuth)
 
+	router.Static("/images", "images/")
+
 	userAuth.POST("/getUser", controllers.GetUserById)
+	router.PUT("/user/foto/:id", controllers.UpdatePhotoProfile)
 	router.POST("/register", controllers.Register)
 	router.POST("/login", controllers.Login)
 	router.POST("/resendOtp", controllers.ResendOtpEmailPassVer)
-	router.POST("/emailve", controllers.OtpEmailVer)
+
+	category.GET("/machine", controllers.GetCategoryMachine)
+	category.POST("/machine", controllers.CategoryMachine)
+
+	router.GET("/store/items", controllers.GetStoreItems)
+	router.POST("/store/items", controllers.StoreItems)
+
+	router.POST("/sales", controllers.SalesReport)
+	router.POST("/service", controllers.ServiceReport)
+	router.GET("/sales", controllers.GetSalesReport)
+	router.GET("/service", controllers.GetServiceReport)
 
 	viPay := router.Group("/viPay")
 
@@ -48,6 +62,22 @@ func main() {
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Pong")
 	})
+
+	router.GET("/daftar-komik", func(c *gin.Context) {
+		order := c.Query("order")
+		page := c.Query("page")
+
+		response, err := controllers.GetDaftarKomik(order, page)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, response)
+	})
+	router.GET("/fetch-data", controllers.GetDataHandler)
+	router.GET("/komik-info", controllers.GetKomikInfo)
+	router.GET("/search", controllers.SearchKomik)
 
 	router.Run()
 }

@@ -2,8 +2,8 @@ package models
 
 type User struct {
 	UserID   uint   `gorm:"primarykey" json:"user_id"`
-	Email    string `gorm:"unique;not null" json:"email"`
+	Image    string `form:"image" json:"image"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Active   bool   `json:"active"`
+	Branch   string `json:"branch"`
 }

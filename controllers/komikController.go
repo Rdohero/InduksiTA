@@ -196,10 +196,10 @@ func GetDataHandler(c *gin.Context) {
 	})
 }
 
-func fetchKomikInfo(url string) (string, []map[string]string, string, error) {
+func fetchKomikInfo(url string) (string, []map[string]string, string, []string, error) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
-		return "", nil, "", err
+		return "", nil, "", nil, err
 	}
 
 	title := strings.TrimSpace(doc.Find(".komik_info-content-body-title").Text())
@@ -232,7 +232,13 @@ func fetchKomikInfo(url string) (string, []map[string]string, string, error) {
 		chapters = append(chapters, chapterInfo)
 	})
 
-	return title, chapters, sinopsis, nil
+	var genres []string
+	doc.Find("span.komik_info-content-genre a.genre-item").Each(func(i int, s *goquery.Selection) {
+		genre := strings.TrimSpace(s.Text())
+		genres = append(genres, genre)
+	})
+
+	return title, chapters, sinopsis, genres, nil
 }
 
 func GetKomikInfo(c *gin.Context) {
@@ -242,7 +248,7 @@ func GetKomikInfo(c *gin.Context) {
 		return
 	}
 
-	title, chapters, sinopsis, err := fetchKomikInfo(url)
+	title, chapters, sinopsis, genres, err := fetchKomikInfo(url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -251,6 +257,7 @@ func GetKomikInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"title":    title,
 		"sinopsis": sinopsis,
+		"genre":    genres,
 		"chapters": chapters,
 	})
 }

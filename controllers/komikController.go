@@ -202,12 +202,22 @@ func fetchKomikInfo(url string) (string, []map[string]string, string, error) {
 		return "", nil, "", err
 	}
 
-	// Mengambil judul komik
 	title := strings.TrimSpace(doc.Find(".komik_info-content-body-title").Text())
 
-	sinopsis := strings.TrimSpace(doc.Find(".komik_info-description-sinopsis p").Text())
+	sinopsis1 := strings.TrimSpace(doc.Find(".komik_info-description-sinopsis p").Text())
 
-	// Mengambil informasi setiap chapter
+	sinopsis2 := strings.TrimSpace(doc.Find(".markup-2BOw-j.messageContent-2qWWxC").Text())
+
+	var sinopsis string
+
+	if sinopsis1 != "" {
+		sinopsis = sinopsis1
+	} else if sinopsis2 != "" {
+		sinopsis = sinopsis2
+	} else {
+		sinopsis = "Sinopsis tidak ditemukan"
+	}
+
 	var chapters []map[string]string
 	doc.Find(".komik_info-chapters-item").Each(func(i int, s *goquery.Selection) {
 		chapter := strings.TrimSpace(strings.Replace(s.Find(".chapter-link-item").Text(), "Chapter\n", "", -1))

@@ -297,5 +297,10 @@ func SearchKomik(c *gin.Context) {
 		listOfKomik = append(listOfKomik, k)
 	})
 
+	if len(listOfKomik) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Judul Yang dicari tidak ditemukan"})
+		return
+	}
+
 	c.JSON(http.StatusOK, listOfKomik)
 }

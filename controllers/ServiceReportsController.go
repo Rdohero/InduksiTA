@@ -10,14 +10,13 @@ import (
 
 func ServiceReport(c *gin.Context) {
 	var Service struct {
-		Date          time.Time
-		Branch        string
-		Person        string
-		MachineNumber string
-		MachineName   string
-		Quantity      int
-		Complaints    string
-		Status        string
+		Date          time.Time `json:"date"`
+		Person        string    `json:"person"`
+		MachineNumber string    `json:"machineNumber"`
+		MachineName   string    `json:"machineName"`
+		Quantity      int       `json:"quantity"`
+		Complaints    string    `json:"complaints"`
+		Status        string    `json:"status"`
 	}
 
 	if err := c.BindJSON(&Service); err != nil {
@@ -29,7 +28,6 @@ func ServiceReport(c *gin.Context) {
 
 	Report := models.ServiceReports{
 		Date:          Service.Date,
-		Branch:        Service.Branch,
 		PersonName:    Service.Person,
 		MachineNumber: Service.MachineNumber,
 		MachineName:   Service.MachineName,

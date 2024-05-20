@@ -12,7 +12,6 @@ func Register(c *gin.Context) {
 	var body struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
-		Branch   string `json:"branch"`
 	}
 
 	if c.Bind(&body) != nil {
@@ -44,7 +43,6 @@ func Register(c *gin.Context) {
 		user := models.User{
 			Username: body.Username,
 			Password: string(hash),
-			Branch:   body.Branch,
 		}
 		result := initializers.DB.Create(&user)
 

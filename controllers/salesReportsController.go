@@ -10,10 +10,9 @@ import (
 
 func SalesReport(c *gin.Context) {
 	var Sales struct {
-		Date     string
-		Branch   string
-		Item     string
-		Quantity int
+		Date     string `json:"date"`
+		Item     string `json:"item"`
+		Quantity int    `json:"quantity"`
 	}
 
 	if err := c.BindJSON(&Sales); err != nil {
@@ -43,7 +42,6 @@ func SalesReport(c *gin.Context) {
 
 	Report := models.SalesReports{
 		Date:     dateTime,
-		Branch:   Sales.Branch,
 		ItemName: Sales.Item,
 		Quantity: Sales.Quantity,
 	}

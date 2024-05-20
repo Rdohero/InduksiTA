@@ -5,5 +5,4 @@ type User struct {
 	Image    string `form:"image" json:"image"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Branch   string `json:"branch"`
 }

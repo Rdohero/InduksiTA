@@ -243,7 +243,10 @@ func fetchKomikInfo(url string) (string, []map[string]string, string, []Genre, e
 
 	var genres []Genre
 	genres = append(genres, Genre{Name: status})
-	genres = append(genres, Genre{Name: typeInfo, Link: typeInfoLink})
+
+	if typeInfo != "" && typeInfoLink != "" {
+		genres = append(genres, Genre{Name: typeInfo, Link: typeInfoLink})
+	}
 
 	doc.Find("span.komik_info-content-genre a.genre-item").Each(func(i int, s *goquery.Selection) {
 		genreName := strings.TrimSpace(s.Text())

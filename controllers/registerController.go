@@ -10,8 +10,10 @@ import (
 
 func Register(c *gin.Context) {
 	var body struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username    string `json:"username"`
+		Password    string `json:"password"`
+		Address     string `json:"address"`
+		NoHandphone string `json:"no_handphone"`
 	}
 
 	if c.Bind(&body) != nil {
@@ -41,8 +43,10 @@ func Register(c *gin.Context) {
 
 	if checkPassword == nil {
 		user := models.User{
-			Username: body.Username,
-			Password: string(hash),
+			Username:    body.Username,
+			Password:    string(hash),
+			Address:     body.Address,
+			NoHandphone: body.NoHandphone,
 		}
 		result := initializers.DB.Create(&user)
 

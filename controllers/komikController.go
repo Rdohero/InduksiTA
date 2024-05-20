@@ -196,7 +196,12 @@ func GetDataHandler(c *gin.Context) {
 	})
 }
 
-func fetchKomikInfo(url string) (string, []map[string]string, string, []string, error) {
+type Genres struct {
+	Name string
+	Link string
+}
+
+func fetchKomikInfo(url string) (string, []map[string]string, string, []Genre, error) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		return "", nil, "", nil, err
@@ -232,16 +237,17 @@ func fetchKomikInfo(url string) (string, []map[string]string, string, []string, 
 		chapters = append(chapters, chapterInfo)
 	})
 
-	status := doc.Find(".komik_info-content-info b:contains('Status:')").Parent().Contents().Last().Text()
-	status = strings.TrimSpace(status)
+	status := strings.TrimSpace(doc.Find(".komik_info-content-info b:contains('Status:')").Parent().Contents().Last().Text())
 	typeInfo := strings.TrimSpace(doc.Find(".komik_info-content-info-type a").Text())
 
-	var genres []string
-	genres = append(genres, status, typeInfo)
+	var genres []Genre
+	genres = append(genres, Genre{Name: status})
+	genres = append(genres, Genre{Name: typeInfo})
 
 	doc.Find("span.komik_info-content-genre a.genre-item").Each(func(i int, s *goquery.Selection) {
-		genre := strings.TrimSpace(s.Text())
-		genres = append(genres, genre)
+		genreName := strings.TrimSpace(s.Text())
+		genreLink, _ := s.Attr("href")
+		genres = append(genres, Genre{Name: genreName, Link: genreLink})
 	})
 
 	return title, chapters, sinopsis, genres, nil

@@ -47,6 +47,7 @@ func main() {
 	router.POST("/service", controllers.ServiceReport)
 	router.GET("/sales", controllers.GetSalesReport)
 	router.GET("/service", controllers.GetServiceReport)
+	router.GET("/search", controllers.Search)
 
 	viPay := router.Group("/viPay")
 

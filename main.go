@@ -63,7 +63,9 @@ func main() {
 		c.JSON(http.StatusOK, "Pong")
 	})
 
-	router.GET("/daftar-komik", func(c *gin.Context) {
+	komikCast := router.Group("/komikCast")
+
+	komikCast.GET("/daftar-komik", func(c *gin.Context) {
 		order := c.Query("order")
 		page := c.Query("page")
 
@@ -75,9 +77,11 @@ func main() {
 
 		c.JSON(http.StatusOK, response)
 	})
-	router.GET("/fetch-data", controllers.GetDataHandler)
-	router.GET("/komik-info", controllers.GetKomikInfo)
-	router.GET("/search", controllers.SearchKomik)
+	komikCast.GET("/fetch-data", controllers.GetDataHandler)
+	komikCast.GET("/komik-info", controllers.GetKomikInfo)
+	komikCast.GET("/search", controllers.SearchKomik)
+	komikCast.GET("/genre", controllers.GetGenreInfo)
+	komikCast.GET("/genre/komik", controllers.FetchComicsByGenre)
 
 	router.Run()
 }

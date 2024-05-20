@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"InduksiTA/allUrl"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -30,8 +31,7 @@ type KomikResponse struct {
 }
 
 func GetDaftarKomik(order string, page string) (KomikResponse, error) {
-	baseUrl := "https://komikcast.lol/"
-	urlPath := baseUrl + "daftar-komik/"
+	urlPath := allUrl.KomikCastUrl + "/daftar-komik/"
 
 	if order != "" {
 		order = "?order=" + order
@@ -67,7 +67,7 @@ func GetDaftarKomik(order string, page string) (KomikResponse, error) {
 
 	doc.Find("div.list-update_item").Each(func(i int, s *goquery.Selection) {
 		link, _ := s.Find("a").Attr("href")
-		linkId := strings.TrimPrefix(link, "https://komikcast.lol/komik/")
+		linkId := strings.TrimPrefix(link, allUrl.KomikCastUrl+"/komik/")
 		linkId = strings.TrimSuffix(linkId, "/")
 
 		title := s.Find("h3.title").Text()
@@ -78,7 +78,7 @@ func GetDaftarKomik(order string, page string) (KomikResponse, error) {
 		isCompleted := s.Find("span.Completed").Length() > 0
 
 		linkChapter, _ := s.Find("div.chapter").Attr("href")
-		linkIdChapter := strings.TrimPrefix(linkChapter, "https://komikcast.lol/chapter/")
+		linkIdChapter := strings.TrimPrefix(linkChapter, allUrl.KomikCastUrl+"/chapter/")
 		linkIdChapter = strings.TrimSuffix(linkIdChapter, "/")
 
 		daftarKomik = append(daftarKomik, Komik{
@@ -283,7 +283,7 @@ func SearchKomik(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 
 	search = strings.ReplaceAll(search, " ", "+")
-	baseURL := fmt.Sprintf("https://komikcast.lol/page/%s/?s=%s", page, search)
+	baseURL := fmt.Sprintf(allUrl.KomikCastUrl+"/page/%s/?s=%s", page, search)
 
 	resp, err := http.Get(baseURL)
 	if err != nil {
@@ -329,4 +329,83 @@ func SearchKomik(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, listOfKomik)
+}
+
+type Genre struct {
+	Name string
+	Link string
+}
+
+func fetchGenres(url string) ([]Genre, error) {
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var genres []Genre
+	doc.Find(".genresx li a").Each(func(i int, s *goquery.Selection) {
+		name := strings.TrimSpace(s.Text())
+		link, exists := s.Attr("href")
+		if exists {
+			genres = append(genres, Genre{Name: name, Link: link})
+		}
+	})
+
+	return genres, nil
+}
+
+func GetGenreInfo(c *gin.Context) {
+	url := allUrl.KomikCastUrl + "/genres/fantasy/"
+	genres, err := fetchGenres(url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, genres)
+}
+
+type Comic struct {
+	Title     string `json:"title"`
+	Link      string `json:"link"`
+	ImageLink string `json:"image_link"`
+}
+
+func FetchComicsByGenre(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "URL parameter is required"})
+		return
+	}
+
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch comics"})
+		return
+	}
+
+	var comics []Comic
+
+	doc.Find(".list-update_item").Each(func(i int, s *goquery.Selection) {
+		comic := Comic{}
+
+		// Get title
+		comic.Title = s.Find(".title").Text()
+
+		// Get link
+		link, exists := s.Find("a").Attr("href")
+		if exists {
+			comic.Link = link
+		}
+
+		// Get image link
+		imageLink, exists := s.Find("img").Attr("src")
+		if exists {
+			comic.ImageLink = imageLink
+		}
+
+		comics = append(comics, comic)
+	})
+
+	c.JSON(http.StatusOK, comics)
 }

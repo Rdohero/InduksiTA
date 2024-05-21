@@ -39,9 +39,14 @@ func main() {
 
 	category.GET("/machine", controllers.GetCategoryMachine)
 	category.POST("/machine", controllers.CategoryMachine)
+	category.GET("/spare/part", controllers.GetCategorySparePart)
+	category.POST("/spare/part", controllers.CategorySparePart)
 
 	router.GET("/store/items", controllers.GetStoreItems)
 	router.POST("/store/items", controllers.StoreItems)
+
+	router.GET("/spare/part", controllers.GetSparePart)
+	router.POST("/spare/part", controllers.SparePart)
 
 	router.POST("/sales", controllers.SalesReport)
 	router.POST("/service", controllers.ServiceReport)

@@ -201,10 +201,10 @@ type Genres struct {
 	Link string
 }
 
-func fetchKomikInfo(url string) (string, []map[string]string, string, []Genre, error) {
+func fetchKomikInfo(url string) (string, []map[string]string, string, []Genre, string, error) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
-		return "", nil, "", nil, err
+		return "", nil, "", nil, "", err
 	}
 
 	title := strings.TrimSpace(doc.Find(".komik_info-content-body-title").Text())
@@ -254,7 +254,7 @@ func fetchKomikInfo(url string) (string, []map[string]string, string, []Genre, e
 		genres = append(genres, Genre{Name: genreName, Link: genreLink})
 	})
 
-	return title, chapters, sinopsis, genres, nil
+	return title, chapters, sinopsis, genres, url, nil
 }
 
 func GetKomikInfo(c *gin.Context) {
@@ -264,7 +264,7 @@ func GetKomikInfo(c *gin.Context) {
 		return
 	}
 
-	title, chapters, sinopsis, genres, err := fetchKomikInfo(url)
+	title, chapters, sinopsis, genres, link, err := fetchKomikInfo(url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -272,6 +272,7 @@ func GetKomikInfo(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"title":    title,
+		"link":     link,
 		"sinopsis": sinopsis,
 		"genre":    genres,
 		"chapters": chapters,

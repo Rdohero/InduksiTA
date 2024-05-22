@@ -52,7 +52,11 @@ func main() {
 	router.POST("/service", controllers.ServiceReport)
 	router.GET("/sales", controllers.GetSalesReport)
 	router.GET("/service", controllers.GetServiceReport)
-	router.GET("/search", controllers.Search)
+
+	search := router.Group("search")
+
+	search.GET("/machine", controllers.SearchMachine)
+	search.GET("/sparePart", controllers.SearchSparePart)
 
 	viPay := router.Group("/viPay")
 

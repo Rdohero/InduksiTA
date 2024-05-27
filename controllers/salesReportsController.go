@@ -176,3 +176,21 @@ func GetSalesReport(c *gin.Context) {
 		"Data":   salesReport,
 	})
 }
+
+func DeletedSalesReport(c *gin.Context) {
+	id := c.Param("id")
+	var salesReport []models.SalesReports
+	var salesReportItems []models.SalesReportItems
+	sales := initializers.DB.Where("sales_report_id = ?", id).Delete(&salesReportItems)
+	if sales.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Failed to Delete Sales Report Items",
+		})
+		return
+	} else {
+		initializers.DB.Where("sales_report_id = ?", id).Delete(&salesReport)
+		c.JSON(http.StatusOK, gin.H{
+			"Succes": "Succes Deleting Sales Report",
+		})
+	}
+}

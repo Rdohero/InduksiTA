@@ -3,8 +3,19 @@ package models
 import "time"
 
 type SalesReports struct {
-	SalesReportID uint      `gorm:"primarykey" json:"sales_report_id"`
-	Date          time.Time `json:"date"`
-	ItemName      string    `json:"item_name"`
-	Quantity      int       `json:"quantity"`
+	SalesReportID    uint               `gorm:"primarykey" json:"sales_report_id"`
+	Date             time.Time          `json:"date"`
+	SalesReportItems []SalesReportItems `gorm:"foreignKey:SalesReportID;references:SalesReportID"`
+}
+
+type SalesReportItems struct {
+	SalesReportItemsID uint         `gorm:"primarykey" json:"sales_report_items_id"`
+	ItemName           string       `json:"item_name"`
+	Quantity           int          `json:"quantity"`
+	Price              int          `json:"price"`
+	Category           string       `json:"category"`
+	CategoryMachineID  uint         `json:"category_machine_id"`
+	SalesReportID      uint         `json:"sales_report_id"`
+	SalesReports       SalesReports `gorm:"foreignKey:SalesReportID;references:SalesReportID"`
+	CategoryMachine    CategoryMachine
 }

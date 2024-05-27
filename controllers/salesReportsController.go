@@ -80,7 +80,7 @@ func SalesReport(c *gin.Context) {
 func GetSalesReport(c *gin.Context) {
 	var salesReport []models.SalesReports
 
-	initializers.DB.Find(&salesReport)
+	initializers.DB.Preload("SalesReportItems.CategoryMachine").Find(&salesReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "Succes Getting Sales Report",

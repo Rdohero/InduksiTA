@@ -57,6 +57,58 @@ func SalesReport(c *gin.Context) {
 
 		if create.Error == nil {
 			for _, item := range Sales.Item {
+				if item.Category == "mesin" {
+					var storeItem models.StoreItems
+					if store := initializers.DB.First(&storeItem, item.ID).Error; store != nil {
+						c.JSON(http.StatusBadRequest, gin.H{
+							"Error": "Store item not found",
+							"Item":  item,
+						})
+						return
+					}
+
+					if storeItem.Quantity < item.Quantity {
+						c.JSON(http.StatusBadRequest, gin.H{
+							"Error": "Insufficient stock",
+							"Item":  item,
+						})
+						return
+					}
+					storeItem.Quantity -= item.Quantity
+					if quantityUpdate := initializers.DB.Save(&storeItem).Error; quantityUpdate != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{
+							"Error": "Failed to update store item quantity",
+							"Item":  item,
+						})
+						return
+					}
+				} else if item.Category == "spare_part" {
+					var sparePart models.SparePart
+					if spare := initializers.DB.First(&sparePart, item.ID).Error; spare != nil {
+						c.JSON(http.StatusBadRequest, gin.H{
+							"Error": "Spare Part not found",
+							"Item":  item,
+						})
+						return
+					}
+
+					if sparePart.Quantity < item.Quantity {
+						c.JSON(http.StatusBadRequest, gin.H{
+							"Error": "Insufficient stock",
+							"Item":  item,
+						})
+						return
+					}
+					sparePart.Quantity -= item.Quantity
+					if quantityUpdate := initializers.DB.Save(&sparePart).Error; quantityUpdate != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{
+							"Error": "Failed to update spare part quantity",
+							"Item":  item,
+						})
+						return
+					}
+				}
+
 				ReportItem := models.SalesReportItems{
 					StoreItemsID:      uint(item.ID),
 					ItemName:          item.Item,

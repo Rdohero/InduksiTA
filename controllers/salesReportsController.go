@@ -5,6 +5,7 @@ import (
 	"InduksiTA/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 type Items struct {
@@ -30,51 +31,56 @@ func SalesReport(c *gin.Context) {
 	}
 
 	if Sales.Item != nil && len(Sales.Item) > 0 {
-		c.JSON(http.StatusOK, gin.H{
-			"Succes": "Succes Create Sales Report",
-			"Data":   Sales,
-		})
+		parsedDate, err := time.Parse("2006-01-02", Sales.Date)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Error": "Invalid date format",
+			})
+			return
+		}
+
+		formattedDate := parsedDate.Format("2006-01-02T15:04:05Z")
+
+		dateTime, err := time.Parse(time.RFC3339, formattedDate)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Error": "Error converting date string to time.Time object",
+			})
+			return
+		}
+
+		Report := models.SalesReports{
+			Date: dateTime,
+		}
+
+		create := initializers.DB.Create(&Report).Find(&Report)
+
+		if create.Error == nil {
+			for _, item := range Sales.Item {
+				ReportItem := models.SalesReportItems{
+					ItemName:          item.Item,
+					Quantity:          item.Quantity,
+					Price:             item.Price,
+					Category:          item.Category,
+					CategoryMachineID: uint(item.CategoryItemsId),
+					SalesReportID:     Report.SalesReportID,
+				}
+				initializers.DB.Create(&ReportItem)
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"Succes": "Succes Create Sales Report",
+			})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": create.Error,
+			})
+		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"Error": "Data Item Not Found",
 			"Data":  Sales,
 		})
 	}
-
-	//parsedDate, err := time.Parse("2006-01-02", Sales.Date)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{
-	//		"Error": "Invalid date format",
-	//	})
-	//	return
-	//}
-	//
-	//formattedDate := parsedDate.Format("2006-01-02T15:04:05Z")
-	//
-	//dateTime, err := time.Parse(time.RFC3339, formattedDate)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{
-	//		"Error": "Error converting date string to time.Time object",
-	//	})
-	//	return
-	//}
-	//
-	//Report := models.SalesReports{
-	//	Date:     dateTime,
-	//}
-	//
-	//create := initializers.DB.Create(&Report).Find(&Report)
-	//
-	//if create.Error == nil {
-	//	c.JSON(http.StatusOK, gin.H{
-	//		"Succes": "Succes Create Sales Report",
-	//		"Data":   Report,
-	//	})
-	//} else {
-	//	c.JSON(http.StatusBadRequest, gin.H{
-	//		"error": create.Error,
-	//	})
-	//}
 }
 
 func GetSalesReport(c *gin.Context) {

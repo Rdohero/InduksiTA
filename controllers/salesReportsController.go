@@ -58,6 +58,7 @@ func SalesReport(c *gin.Context) {
 		if create.Error == nil {
 			for _, item := range Sales.Item {
 				ReportItem := models.SalesReportItems{
+					StoreItemsID:      uint(item.ID),
 					ItemName:          item.Item,
 					Quantity:          item.Quantity,
 					Price:             item.Price,

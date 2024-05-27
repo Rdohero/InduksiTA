@@ -10,6 +10,7 @@ type SalesReports struct {
 
 type SalesReportItems struct {
 	SalesReportItemsID uint         `gorm:"primarykey" json:"sales_report_items_id"`
+	StoreItemsID       uint         `json:"store_items_id"`
 	ItemName           string       `json:"item_name"`
 	Quantity           int          `json:"quantity"`
 	Price              int          `json:"price"`

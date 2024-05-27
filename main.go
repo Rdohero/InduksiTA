@@ -4,9 +4,11 @@ import (
 	"InduksiTA/controllers"
 	"InduksiTA/initializers"
 	"InduksiTA/middleware"
+	"InduksiTA/models"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func init() {
@@ -58,6 +60,35 @@ func main() {
 
 	search.GET("/machine", controllers.SearchMachine)
 	search.GET("/sparePart", controllers.SearchSparePart)
+
+	router.GET("/update-stock", func(c *gin.Context) {
+		stockStr := c.Query("stock")
+
+		stock, err := strconv.Atoi(stockStr)
+		if err != nil || stock < 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid stock value"})
+			return
+		}
+
+		var storeItems []models.StoreItems
+		var spareParts []models.SparePart
+
+		initializers.DB.Find(&storeItems)
+		for _, item := range storeItems {
+			if item.Quantity == 0 {
+				initializers.DB.Model(&item).Update("quantity", stock)
+			}
+		}
+
+		initializers.DB.Find(&spareParts)
+		for _, part := range spareParts {
+			if part.Quantity == 0 {
+				initializers.DB.Model(&part).Update("quantity", stock)
+			}
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Stock updated successfully"})
+	})
 
 	viPay := router.Group("/viPay")
 

@@ -8,12 +8,12 @@ import (
 )
 
 type Items struct {
-	ID            int    `json:"id"`
-	Item          string `json:"item"`
-	Price         int    `json:"price"`
-	Category      string `json:"category"`
-	CategoryItems int    `json:"category_items"`
-	Quantity      int    `json:"quantity"`
+	ID              int    `json:"id"`
+	Item            string `json:"item"`
+	Price           int    `json:"price"`
+	Category        string `json:"category"`
+	CategoryItemsId int    `json:"category_items_id"`
+	Quantity        int    `json:"quantity"`
 }
 
 func SalesReport(c *gin.Context) {

@@ -105,25 +105,5 @@ func main() {
 		c.JSON(http.StatusOK, "Pong")
 	})
 
-	komikCast := router.Group("/komikCast")
-
-	komikCast.GET("/daftar-komik", func(c *gin.Context) {
-		order := c.Query("order")
-		page := c.Query("page")
-
-		response, err := controllers.GetDaftarKomik(order, page)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, response)
-	})
-	komikCast.GET("/fetch-data", controllers.GetDataHandler)
-	komikCast.GET("/komik-info", controllers.GetKomikInfo)
-	komikCast.GET("/search", controllers.SearchKomik)
-	komikCast.GET("/genre", controllers.GetGenreInfo)
-	komikCast.GET("/genre/komik", controllers.FetchComicsByGenre)
-
 	router.Run()
 }

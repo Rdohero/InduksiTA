@@ -5,6 +5,7 @@ import "time"
 type SalesReports struct {
 	SalesReportID    uint               `gorm:"primarykey" json:"sales_report_id"`
 	Date             time.Time          `json:"date"`
+	TotalPrice       int                `json:"total_price"`
 	SalesReportItems []SalesReportItems `gorm:"foreignKey:SalesReportID;references:SalesReportID"`
 }
 

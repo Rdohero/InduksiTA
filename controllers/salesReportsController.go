@@ -57,8 +57,14 @@ func SalesReport(c *gin.Context) {
 			return
 		}
 
+		totalPrice := 0
+		for _, item := range Sales.Item {
+			totalPrice += item.Price * item.Quantity
+		}
+
 		Report := models.SalesReports{
-			Date: dateTime,
+			Date:       dateTime,
+			TotalPrice: totalPrice,
 		}
 
 		if salesReport := tx.Create(&Report).Error; salesReport != nil {

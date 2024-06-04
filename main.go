@@ -39,7 +39,7 @@ func main() {
 	router.POST("/login", controllers.Login)
 	router.PUT("/user", controllers.ChangeProfileUser)
 	router.POST("/forgot/password", controllers.ForgotPassword)
-	router.POST("/resendOtp", controllers.ResendOtpEmailPassVer)
+	router.POST("/otp", controllers.ResendOtpEmailPassVer)
 
 	category.GET("/machine", controllers.GetCategoryMachine)
 	category.POST("/machine", controllers.CategoryMachine)

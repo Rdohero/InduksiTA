@@ -70,40 +70,6 @@ func ChangeProfileUser(c *gin.Context) {
 	})
 }
 
-func ForgotPassword(c *gin.Context) {
-	var Password struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	c.Bind(&Password)
-
-	var user models.User
-	if err := initializers.DB.Where("username = ?", Password.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
-
-	hash, hashErr := bcrypt.GenerateFromPassword([]byte(Password.Password), 14)
-
-	if hashErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": "Failed to hash password",
-		})
-
-		return
-	}
-
-	user.Password = string(hash)
-	if err := initializers.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to Forgot Password"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"Success": "Success Forgot Password",
-	})
-}
-
 func UpdatePhotoProfile(c *gin.Context) {
 	id := c.Param("id")
 

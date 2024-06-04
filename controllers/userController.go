@@ -77,8 +77,6 @@ func ForgotPassword(c *gin.Context) {
 	}
 	c.Bind(&Password)
 
-	fmt.Println(Password)
-
 	var user models.User
 	if err := initializers.DB.Where("username = ?", Password.Username).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})

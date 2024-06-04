@@ -17,16 +17,68 @@ import (
 	"unicode"
 )
 
-func ChangePasswordUser(c *gin.Context) {
+func ChangeProfileUser(c *gin.Context) {
+	var requestData struct {
+		ID          int    `json:"id"`
+		Username    string `json:"username"`
+		Password    string `json:"password"`
+		Address     string `json:"address"`
+		NoHandphone string `json:"no_handphone"`
+	}
+
+	if err := c.Bind(&requestData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	var user models.User
+	if err := initializers.DB.Where("user_id = ?", requestData.ID).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if requestData.Password != "" {
+		hash, hashErr := bcrypt.GenerateFromPassword([]byte(requestData.Password), 14)
+		if hashErr != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to hash password",
+			})
+			return
+		}
+		user.Password = string(hash)
+	}
+
+	if requestData.Username != "" && requestData.Username != user.Username {
+		user.Username = requestData.Username
+	}
+
+	if requestData.Address != "" && requestData.Address != user.Address {
+		user.Address = requestData.Address
+	}
+
+	if requestData.NoHandphone != "" && requestData.NoHandphone != user.NoHandphone {
+		user.NoHandphone = requestData.NoHandphone
+	}
+
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user data"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": "User data updated successfully",
+	})
+}
+
+func ForgotPassword(c *gin.Context) {
 	var Password struct {
-		ID       int    `json:"id"`
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 	c.Bind(&Password)
 
 	var user models.User
-	if err := initializers.DB.Where("user_id = ? && username = ?", Password.ID, Password.Username).First(&user).Error; err != nil {
+	if err := initializers.DB.Where("username = ?", Password.Username).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
@@ -43,12 +95,12 @@ func ChangePasswordUser(c *gin.Context) {
 
 	user.Password = string(hash)
 	if err := initializers.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update Password"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to Forgot Password"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"Success": "Success Update Password",
+		"Success": "Success Forgot Password",
 	})
 }
 

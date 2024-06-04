@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"mime/multipart"
 	"net"
 	"net/http"
@@ -15,6 +16,41 @@ import (
 	"strings"
 	"unicode"
 )
+
+func ChangePasswordUser(c *gin.Context) {
+	var Password struct {
+		ID       int    `json:"id"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	c.Bind(&Password)
+
+	var user models.User
+	if err := initializers.DB.Where("user_id = ? && username = ?", Password.ID, Password.Username).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	hash, hashErr := bcrypt.GenerateFromPassword([]byte(Password.Password), 14)
+
+	if hashErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Error": "Failed to hash password",
+		})
+
+		return
+	}
+
+	user.Password = string(hash)
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update Password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Success": "Success Update Password",
+	})
+}
 
 func UpdatePhotoProfile(c *gin.Context) {
 	id := c.Param("id")

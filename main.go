@@ -37,6 +37,7 @@ func main() {
 	router.PUT("/user/foto/:id", controllers.UpdatePhotoProfile)
 	router.POST("/register", controllers.Register)
 	router.POST("/login", controllers.Login)
+	router.PUT("/user/password", controllers.ChangePasswordUser)
 	router.POST("/resendOtp", controllers.ResendOtpEmailPassVer)
 
 	category.GET("/machine", controllers.GetCategoryMachine)

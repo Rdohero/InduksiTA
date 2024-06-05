@@ -125,7 +125,9 @@ func ForgotPassword(c *gin.Context) {
 		Password string `json:"password"`
 		Otp      string `json:"otp"`
 	}
-	c.Bind(&Otp)
+	fmt.Println(Otp.Username)
+	fmt.Println("belum di bind")
+	c.BindJSON(&Otp)
 
 	var token2, err1 = DapatkanOtpString(Otp.Otp)
 

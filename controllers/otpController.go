@@ -59,17 +59,17 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	port := "587"
 	address := host + ":" + port
 	// Set up authentication information
-	auth := smtp.PlainAuth("", "itemsgates@gmail.com", "supg zioz tclu ewdx", host)
+	auth := smtp.PlainAuth("", "ud.mojopahit.mesin.jahit@gmail.com", "suky qnpp fdpg vwmz", host)
 	// Construct the message
 	msg := []byte(
-		"From: " + "Items Gate <itemsgates@gmail.com>" + "\n" +
+		"From: " + "Mojopahit <ud.mojopahit.mesin.jahit@gmail.com>" + "\n" +
 			"To: " + strings.Join(to, ",") + "\n" +
 			"Cc: " + strings.Join(cc, ",") + "\n" +
 			"Subject: " + subject + "\r\n" +
 			"Content-Type: text/html; charset=\"UTF-s8\"\r\n" +
 			"\r\n" +
 			HTMLbody)
-	err := smtp.SendMail(address, auth, "Items Gate", to, msg)
+	err := smtp.SendMail(address, auth, "Mojopahit", to, msg)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -94,17 +94,17 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	port2 := "587"
 	address2 := host2 + ":" + port2
 	// Set up authentication information
-	auth2 := smtp.PlainAuth("", "itemsgates@gmail.com", "supg zioz tclu ewdx", host2)
+	auth2 := smtp.PlainAuth("", "ud.mojopahit.mesin.jahit@gmail.com", "suky qnpp fdpg vwmz", host2)
 	// Construct the message
 	msg2 := []byte(
-		"From: " + "Items Gate <itemsgates@gmail.com>" + "\n" +
+		"From: " + "Mojopahit <ud.mojopahit.mesin.jahit@gmail.com>" + "\n" +
 			"To: " + strings.Join(to2, ",") + "\n" +
 			"Cc: " + strings.Join(cc2, ",") + "\n" +
 			"Subject: " + subject2 + "\r\n" +
 			"Content-Type: text/html; charset=\"UTF-s8\"\r\n" +
 			"\r\n" +
 			HTMLbody2)
-	err2 := smtp.SendMail(address2, auth2, "Items Gate", to2, msg2)
+	err2 := smtp.SendMail(address2, auth2, "Mojopahit", to2, msg2)
 
 	if err2 != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -166,7 +166,7 @@ func ForgotPassword(c *gin.Context) {
 
 				hash, hashErr := bcrypt.GenerateFromPassword([]byte(Otp.Password), 14)
 
-				if hashErr != nil {
+				if hashErr != nil && Otp.Password == "" {
 					c.JSON(http.StatusBadRequest, gin.H{
 						"Error": "Failed to hash password",
 					})

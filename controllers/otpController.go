@@ -28,7 +28,7 @@ func ResendOtpEmailPassVer(c *gin.Context) {
 	var _, err1 = getUserByUsername(Resend.Username)
 
 	if err1 != nil {
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"Error": "User not found",
 		})
 		return

@@ -17,6 +17,15 @@ import (
 	"unicode"
 )
 
+func GetAllUser(c *gin.Context) {
+	var user []models.User
+	if err := initializers.DB.Find(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
 func ChangeProfileUser(c *gin.Context) {
 	var requestData struct {
 		ID          int    `json:"id"`

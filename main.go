@@ -33,6 +33,8 @@ func main() {
 
 	router.Static("/images", "images/")
 
+	router.GET("/user/all", controllers.GetAllUser)
+
 	userAuth.POST("/getUser", controllers.GetUserById)
 	router.PUT("/user/foto/:id", controllers.UpdatePhotoProfile)
 	router.POST("/register", controllers.Register)

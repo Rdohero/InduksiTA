@@ -7,4 +7,6 @@ type User struct {
 	Password    string `json:"password"`
 	Address     string `json:"address"`
 	NoHandphone string `json:"no_handphone"`
+	RoleID      uint   `json:"role_id"`
+	Role        Role
 }

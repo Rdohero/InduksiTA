@@ -71,12 +71,13 @@ func Register(c *gin.Context) {
 			Address:     body.Address,
 			NoHandphone: body.NoHandphone,
 			Image:       filePath,
+			RoleID:      2,
 		}
 		result := initializers.DB.Create(&user)
 
 		if result.Error != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"Error": "Email is already in use",
+				"Error": "Error",
 			})
 
 			return

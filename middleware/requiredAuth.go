@@ -37,7 +37,7 @@ func RequiredAuth(c *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
 		var user models.User
-		initializers.DB.First(&user, claims["sub"])
+		initializers.DB.Preload("Role").First(&user, claims["sub"])
 
 		if user.UserID == 0 {
 			c.AbortWithStatus(http.StatusUnauthorized)

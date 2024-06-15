@@ -19,7 +19,7 @@ import (
 
 func GetAllUser(c *gin.Context) {
 	var user []models.User
-	if err := initializers.DB.Find(&user).Error; err != nil {
+	if err := initializers.DB.Preload("Role").Find(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}

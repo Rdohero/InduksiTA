@@ -17,6 +17,7 @@ func Register(c *gin.Context) {
 		Password    string `form:"password" json:"password"`
 		Address     string `form:"address" json:"address"`
 		NoHandphone string `form:"no_handphone" json:"no_handphone"`
+		Role        uint   `form:"role" json:"role"`
 	}
 
 	file, err := c.FormFile("image")
@@ -71,7 +72,7 @@ func Register(c *gin.Context) {
 			Address:     body.Address,
 			NoHandphone: body.NoHandphone,
 			Image:       filePath,
-			RoleID:      2,
+			RoleID:      body.Role,
 		}
 		result := initializers.DB.Create(&user)
 

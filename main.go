@@ -34,6 +34,7 @@ func main() {
 	router.Static("/images", "images/")
 
 	router.GET("/user/all", controllers.GetAllUser)
+	router.GET("/role", controllers.GetRole)
 
 	userAuth.POST("/getUser", controllers.GetUserById)
 	router.PUT("/user/foto/:id", controllers.UpdatePhotoProfile)

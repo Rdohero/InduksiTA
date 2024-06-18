@@ -249,3 +249,12 @@ func GetUserById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, user)
 }
+
+func GetRole(c *gin.Context) {
+	var role []models.Role
+	if err := initializers.DB.Preload("User").Find(&role).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	c.JSON(http.StatusOK, role)
+}

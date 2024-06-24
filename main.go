@@ -42,6 +42,7 @@ func main() {
 	router.POST("/login", controllers.Login)
 	router.POST("/login/owner", controllers.LoginOwner)
 	router.PUT("/user", controllers.ChangeProfileUser)
+	router.DELETE("/user/:id", controllers.DeletedUser)
 	router.POST("/forgot/password", controllers.ForgotPassword)
 	router.POST("/otp", controllers.ResendOtpEmailPassVer)
 

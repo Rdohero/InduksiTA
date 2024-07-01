@@ -53,9 +53,13 @@ func main() {
 
 	router.GET("/store/items", controllers.GetStoreItems)
 	router.POST("/store/items", controllers.StoreItems)
+	router.PUT("/store/items", controllers.EditStoreItems)
+	router.DELETE("/store/items/:id", controllers.DeleteStoreItems)
 
 	router.GET("/spare/part", controllers.GetSparePart)
 	router.POST("/spare/part", controllers.SparePart)
+	router.PUT("/spare/part", controllers.EditSparePart)
+	router.DELETE("/spare/part/:id", controllers.DeleteSparePart)
 
 	router.POST("/sales", controllers.SalesReport)
 	router.POST("/service", controllers.ServiceReport)

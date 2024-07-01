@@ -33,19 +33,19 @@ func StoreItems(c *gin.Context) {
 		return
 	}
 
-	Items := models.StoreItems{
+	items := models.StoreItems{
 		StoreItemsName:    storeItems.StoreItemsName,
 		Quantity:          storeItems.Quantity,
 		CategoryMachineID: storeItems.CategoryMachineID,
 		Price:             storeItems.Price,
 	}
 
-	create := initializers.DB.Create(&Items).Preload("CategoryMachine").Find(&Items)
+	create := initializers.DB.Create(&items).Preload("CategoryMachine").Find(&items)
 
 	if create.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Succes": "Succes Create Store Items",
-			"Data":   Items,
+			"Data":   items,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{

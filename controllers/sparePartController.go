@@ -33,19 +33,19 @@ func SparePart(c *gin.Context) {
 		return
 	}
 
-	Items := models.SparePart{
+	items := models.SparePart{
 		SparePartName:       sparePart.SparePartName,
 		Quantity:            sparePart.Quantity,
 		CategorySparePartID: sparePart.CategorySparePartID,
 		Price:               sparePart.Price,
 	}
 
-	create := initializers.DB.Create(&Items).Preload("CategorySparePart").Find(&Items)
+	create := initializers.DB.Create(&items).Preload("CategorySparePart").Find(&items)
 
 	if create.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Succes": "Succes Create Spare Part",
-			"Data":   Items,
+			"Data":   items,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{

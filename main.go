@@ -48,8 +48,12 @@ func main() {
 
 	category.GET("/machine", controllers.GetCategoryMachine)
 	category.POST("/machine", controllers.CategoryMachine)
+	category.PUT("/machine", controllers.EditCategoryMachine)
+	category.DELETE("/machine/:id", controllers.DeletedCategoryMachine)
 	category.GET("/spare/part", controllers.GetCategorySparePart)
 	category.POST("/spare/part", controllers.CategorySparePart)
+	category.PUT("/spare/part", controllers.EditCategorySparePart)
+	category.DELETE("/spare/part/:id", controllers.DeletedCategorySparePart)
 
 	router.GET("/store/items", controllers.GetStoreItems)
 	router.POST("/store/items", controllers.StoreItems)

@@ -10,7 +10,7 @@ import (
 func GetStoreItems(c *gin.Context) {
 	var storeItems []models.StoreItems
 
-	initializers.DB.Preload("CategoryMachine").Find(&storeItems)
+	initializers.DB.Preload("Category").Find(&storeItems)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "Succes Getting Store Items",
@@ -20,10 +20,10 @@ func GetStoreItems(c *gin.Context) {
 
 func StoreItems(c *gin.Context) {
 	var storeItems struct {
-		StoreItemsName    string `json:"store_items_name"`
-		Quantity          int    `json:"quantity"`
-		Price             int    `json:"Price"`
-		CategoryMachineID uint   `json:"category_machine_id"`
+		StoreItemsName string `json:"store_items_name"`
+		Quantity       int    `json:"quantity"`
+		Price          int    `json:"Price"`
+		CategoryID     uint   `json:"category_id"`
 	}
 
 	if err := c.BindJSON(&storeItems); err != nil {
@@ -34,13 +34,13 @@ func StoreItems(c *gin.Context) {
 	}
 
 	items := models.StoreItems{
-		StoreItemsName:    storeItems.StoreItemsName,
-		Quantity:          storeItems.Quantity,
-		CategoryMachineID: storeItems.CategoryMachineID,
-		Price:             storeItems.Price,
+		StoreItemsName: storeItems.StoreItemsName,
+		Quantity:       storeItems.Quantity,
+		CategoryID:     storeItems.CategoryID,
+		Price:          storeItems.Price,
 	}
 
-	create := initializers.DB.Create(&items).Preload("CategoryMachine").Find(&items)
+	create := initializers.DB.Create(&items).Preload("Category").Find(&items)
 
 	if create.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -56,11 +56,11 @@ func StoreItems(c *gin.Context) {
 
 func EditStoreItems(c *gin.Context) {
 	var storeItems struct {
-		StoreItemsID      uint   `json:"store_items_id"`
-		StoreItemsName    string `json:"store_items_name"`
-		Quantity          int    `json:"quantity"`
-		Price             int    `json:"Price"`
-		CategoryMachineID uint   `json:"category_machine_id"`
+		StoreItemsID   uint   `json:"store_items_id"`
+		StoreItemsName string `json:"store_items_name"`
+		Quantity       int    `json:"quantity"`
+		Price          int    `json:"Price"`
+		CategoryID     uint   `json:"category_id"`
 	}
 
 	if err := c.BindJSON(&storeItems); err != nil {

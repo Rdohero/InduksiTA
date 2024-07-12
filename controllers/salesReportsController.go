@@ -135,13 +135,13 @@ func SalesReport(c *gin.Context) {
 			}
 
 			ReportItem := models.SalesReportItems{
-				StoreItemsID:      uint(item.ID),
-				ItemName:          item.Item,
-				Quantity:          item.Quantity,
-				Price:             item.Price,
-				Category:          item.Category,
-				CategoryMachineID: uint(item.CategoryItemsId),
-				SalesReportID:     Report.SalesReportID,
+				StoreItemsID:  uint(item.ID),
+				ItemName:      item.Item,
+				Quantity:      item.Quantity,
+				Price:         item.Price,
+				Category:      item.Category,
+				CategoryID:    uint(item.CategoryItemsId),
+				SalesReportID: Report.SalesReportID,
 			}
 			if reportItems := tx.Create(&ReportItem).Error; reportItems != nil {
 				tx.Rollback()
@@ -175,7 +175,7 @@ func SalesReport(c *gin.Context) {
 func GetSalesReport(c *gin.Context) {
 	var salesReport []models.SalesReports
 
-	initializers.DB.Preload("SalesReportItems.CategoryMachine").Order("date DESC").Find(&salesReport)
+	initializers.DB.Preload("SalesReportItems.Categories").Order("date DESC").Find(&salesReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "Succes Getting Sales Report",

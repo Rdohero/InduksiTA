@@ -10,4 +10,5 @@ func MigrateDatabase() {
 	//DB.AutoMigrate(&models.SparePart{})
 	//DB.AutoMigrate(&models.SalesReports{})
 	//DB.AutoMigrate(&models.SalesReportItems{})
+	//DB.AutoMigrate(&models.Category{})
 }

@@ -28,7 +28,6 @@ func main() {
 	router.Use(cors.New(config))
 
 	userAuth := router.Group("/userAuth")
-	category := router.Group("/category")
 	userAuth.Use(middleware.RequiredAuth)
 
 	router.Static("/images", "images/")
@@ -46,14 +45,10 @@ func main() {
 	router.POST("/forgot/password", controllers.ForgotPassword)
 	router.POST("/otp", controllers.ResendOtpEmailPassVer)
 
-	category.GET("/machine", controllers.GetCategoryMachine)
-	category.POST("/machine", controllers.CategoryMachine)
-	category.PUT("/machine", controllers.EditCategoryMachine)
-	category.DELETE("/machine/:id", controllers.DeletedCategoryMachine)
-	category.GET("/spare/part", controllers.GetCategorySparePart)
-	category.POST("/spare/part", controllers.CategorySparePart)
-	category.PUT("/spare/part", controllers.EditCategorySparePart)
-	category.DELETE("/spare/part/:id", controllers.DeletedCategorySparePart)
+	router.GET("/category", controllers.GetCategory)
+	router.POST("/category", controllers.CategoryPost)
+	router.PUT("/category", controllers.EditCategory)
+	router.DELETE("/category/:id", controllers.DeletedCategory)
 
 	router.GET("/store/items", controllers.GetStoreItems)
 	router.POST("/store/items", controllers.StoreItems)

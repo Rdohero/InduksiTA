@@ -27,14 +27,14 @@ func SearchMachine(c *gin.Context) {
 			categories = append(categories, categoryID)
 		}
 
-		query = query.Where("category_machine_id IN ?", categories)
+		query = query.Where("category_id IN ?", categories)
 	}
 
 	if nameParam != "" {
 		query = query.Where("store_items_name LIKE ?", "%"+nameParam+"%")
 	}
 
-	err = query.Preload("CategoryMachine").Find(&storeItems).Error
+	err = query.Preload("Category").Find(&storeItems).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -61,14 +61,14 @@ func SearchSparePart(c *gin.Context) {
 			categories = append(categories, categoryID)
 		}
 
-		query = query.Where("category_spare_part_id IN ?", categories)
+		query = query.Where("category_id IN ?", categories)
 	}
 
 	if nameParam != "" {
 		query = query.Where("spare_part_name LIKE ?", "%"+nameParam+"%")
 	}
 
-	err = query.Preload("CategorySparePart").Find(&sparePart).Error
+	err = query.Preload("Category").Find(&sparePart).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

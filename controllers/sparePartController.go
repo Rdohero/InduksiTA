@@ -10,7 +10,7 @@ import (
 func GetSparePart(c *gin.Context) {
 	var sparePart []models.SparePart
 
-	initializers.DB.Preload("CategorySparePart").Find(&sparePart)
+	initializers.DB.Preload("Category").Find(&sparePart)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "Succes Getting Spare Part",
@@ -20,10 +20,10 @@ func GetSparePart(c *gin.Context) {
 
 func SparePart(c *gin.Context) {
 	var sparePart struct {
-		SparePartName       string `json:"spare_part_name"`
-		Quantity            int    `json:"quantity"`
-		Price               int    `json:"price"`
-		CategorySparePartID uint   `json:"category_spare_part_id"`
+		SparePartName string `json:"spare_part_name"`
+		Quantity      int    `json:"quantity"`
+		Price         int    `json:"price"`
+		CategoryID    uint   `json:"category_id"`
 	}
 
 	if err := c.BindJSON(&sparePart); err != nil {
@@ -34,13 +34,13 @@ func SparePart(c *gin.Context) {
 	}
 
 	items := models.SparePart{
-		SparePartName:       sparePart.SparePartName,
-		Quantity:            sparePart.Quantity,
-		CategorySparePartID: sparePart.CategorySparePartID,
-		Price:               sparePart.Price,
+		SparePartName: sparePart.SparePartName,
+		Quantity:      sparePart.Quantity,
+		CategoryID:    sparePart.CategoryID,
+		Price:         sparePart.Price,
 	}
 
-	create := initializers.DB.Create(&items).Preload("CategorySparePart").Find(&items)
+	create := initializers.DB.Create(&items).Preload("Category").Find(&items)
 
 	if create.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -56,11 +56,11 @@ func SparePart(c *gin.Context) {
 
 func EditSparePart(c *gin.Context) {
 	var sparePart struct {
-		SparePartID         uint   `json:"spare_part_id"`
-		SparePartName       string `json:"spare_part_name"`
-		Quantity            int    `json:"quantity"`
-		Price               int    `json:"price"`
-		CategorySparePartID uint   `json:"category_spare_part_id"`
+		SparePartID   uint   `json:"spare_part_id"`
+		SparePartName string `json:"spare_part_name"`
+		Quantity      int    `json:"quantity"`
+		Price         int    `json:"price"`
+		CategoryID    uint   `json:"category_id"`
 	}
 
 	if err := c.BindJSON(&sparePart); err != nil {

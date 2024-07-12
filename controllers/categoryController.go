@@ -97,7 +97,7 @@ func EditCategory(c *gin.Context) {
 	}
 
 	var category models.Category
-	if err := initializers.DB.Where("category_id = ?", categories.CategoryName).First(&category).Error; err != nil {
+	if err := initializers.DB.Where("category_id = ?", categories.CategoryID).First(&category).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Category not found"})
 		return
 	}

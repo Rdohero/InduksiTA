@@ -175,7 +175,10 @@ func SalesReport(c *gin.Context) {
 func GetSalesReport(c *gin.Context) {
 	var salesReport []models.SalesReports
 
-	initializers.DB.Preload("SalesReportItems.Categories").Order("date DESC").Find(&salesReport)
+	initializers.DB.Preload("SalesReportItems.Categories").
+		Order("date DESC").
+		Order("sales_report_id DESC").
+		Find(&salesReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "Succes Getting Sales Report",

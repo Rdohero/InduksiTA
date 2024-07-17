@@ -19,5 +19,5 @@ type SalesReportItems struct {
 	CategoryID         uint         `json:"category_id"`
 	SalesReportID      uint         `json:"sales_report_id"`
 	SalesReports       SalesReports `gorm:"foreignKey:SalesReportID;references:SalesReportID"`
-	Categories         Category
+	Categories         Category     `gorm:"foreignKey:CategoryID;references:CategoryID"`
 }

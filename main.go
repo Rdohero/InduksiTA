@@ -64,7 +64,10 @@ func main() {
 	router.POST("/service", controllers.ServiceReport)
 	router.GET("/sales", controllers.GetSalesReport)
 	router.GET("/service", controllers.GetServiceReport)
+	router.PUT("/service", controllers.EditServiceReport)
 	router.DELETE("/sales/:id", controllers.DeletedSalesReport)
+
+	router.GET("/status", controllers.GetStatus)
 
 	search := router.Group("search")
 

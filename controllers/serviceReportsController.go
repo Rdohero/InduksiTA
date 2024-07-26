@@ -210,6 +210,18 @@ func GetServiceReport(c *gin.Context) {
 	})
 }
 
+func GetServiceReportByStatusID(c *gin.Context) {
+	id := c.Param("id")
+	var serviceReport []models.ServiceReports
+
+	initializers.DB.Where("status_id = ?", id).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Find(&serviceReport)
+
+	c.JSON(http.StatusOK, gin.H{
+		"Success": "Success Getting Service Report",
+		"Data":    serviceReport,
+	})
+}
+
 func GetServiceReportByUserID(c *gin.Context) {
 	id := c.Param("id")
 	var serviceReport []models.ServiceReports

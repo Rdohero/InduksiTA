@@ -65,6 +65,7 @@ func main() {
 	router.GET("/sales", controllers.GetSalesReport)
 	router.GET("/service", controllers.GetServiceReport)
 	router.GET("/service/:id", controllers.GetServiceReportByUserID)
+	router.GET("/service/status/:id", controllers.GetServiceReportByStatusID)
 	router.PUT("/service", controllers.EditServiceReport)
 	router.DELETE("/sales/:id", controllers.DeletedSalesReport)
 

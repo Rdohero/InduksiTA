@@ -33,7 +33,9 @@ func ServiceReport(c *gin.Context) {
 		UserID:      Service.UserID,
 	}
 
-	create := initializers.DB.Create(&Report).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems").Find(&Report)
+	create := initializers.DB.Create(&Report).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems").
+		Order("date DESC").
+		Order("service_report_id DESC").Find(&Report)
 
 	if create.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -202,7 +204,10 @@ func EditServiceReport(c *gin.Context) {
 func GetServiceReport(c *gin.Context) {
 	var serviceReport []models.ServiceReports
 
-	initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Find(&serviceReport)
+	initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
+		Order("date DESC").
+		Order("service_report_id DESC").
+		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Success": "Success Getting Service Report",
@@ -214,7 +219,10 @@ func GetServiceReportByStatusID(c *gin.Context) {
 	id := c.Param("id")
 	var serviceReport []models.ServiceReports
 
-	initializers.DB.Where("status_id = ?", id).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Find(&serviceReport)
+	initializers.DB.Where("status_id = ?", id).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
+		Order("date DESC").
+		Order("service_report_id DESC").
+		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Success": "Success Getting Service Report",
@@ -226,7 +234,10 @@ func GetServiceReportByUserID(c *gin.Context) {
 	id := c.Param("id")
 	var serviceReport []models.ServiceReports
 
-	initializers.DB.Where("user_id = ? && status_id = ?", id, 1).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Find(&serviceReport)
+	initializers.DB.Where("user_id = ? && status_id = ?", id, 1).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
+		Order("date DESC").
+		Order("service_report_id DESC").
+		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Success": "Success Getting Service Report",

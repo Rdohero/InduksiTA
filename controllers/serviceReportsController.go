@@ -10,11 +10,11 @@ import (
 
 func ServiceReport(c *gin.Context) {
 	var Service struct {
-		Date        time.Time `json:"date"`
-		UserID      uint      `json:"user_id"`
-		Name        string    `json:"name"`
-		MachineName string    `json:"machine_name"`
-		Complaints  string    `json:"complaints"`
+		Date        string `json:"date"`
+		UserID      uint   `json:"user_id"`
+		Name        string `json:"name"`
+		MachineName string `json:"machine_name"`
+		Complaints  string `json:"complaints"`
 	}
 
 	if err := c.BindJSON(&Service); err != nil {
@@ -24,8 +24,26 @@ func ServiceReport(c *gin.Context) {
 		return
 	}
 
+	parsedDate, err := time.Parse("2006-01-02", Service.Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Error": "Invalid date format",
+		})
+		return
+	}
+
+	formattedDate := parsedDate.Format("2006-01-02T15:04:05Z")
+
+	dateTime, err := time.Parse(time.RFC3339, formattedDate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Error": "Error converting date string to time.Time object",
+		})
+		return
+	}
+
 	Report := models.ServiceReports{
-		Date:        Service.Date,
+		Date:        dateTime,
 		Name:        Service.Name,
 		MachineName: Service.MachineName,
 		Complaints:  Service.Complaints,

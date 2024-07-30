@@ -51,14 +51,17 @@ func ServiceReport(c *gin.Context) {
 		UserID:      Service.UserID,
 	}
 
-	create := initializers.DB.Create(&Report).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems").
-		Order("date DESC").
-		Order("service_report_id DESC").Find(&Report)
+	create := initializers.DB.Create(&Report)
 
 	if create.Error == nil {
+		var Reports []models.ServiceReports
+		initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems").
+			Order("date DESC").
+			Order("service_report_id DESC").Find(&Reports)
+
 		c.JSON(http.StatusOK, gin.H{
 			"Succes": "Succes Create Service Report",
-			"Data":   Report,
+			"Data":   Reports,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{

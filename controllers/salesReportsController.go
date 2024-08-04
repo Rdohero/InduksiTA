@@ -5,6 +5,7 @@ import (
 	"InduksiTA/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -184,6 +185,35 @@ func GetSalesReport(c *gin.Context) {
 		"Succes": "Succes Getting Sales Report",
 		"Data":   salesReport,
 	})
+}
+
+func GetSalesReportsLastDays(c *gin.Context) {
+	daysStr := c.Query("days")
+	monthsStr := c.Query("months")
+	yearsStr := c.Query("years")
+
+	days, err := strconv.Atoi(daysStr)
+	if err != nil {
+		days = 0
+	}
+	months, err := strconv.Atoi(monthsStr)
+	if err != nil {
+		months = 0
+	}
+	years, err := strconv.Atoi(yearsStr)
+	if err != nil {
+		years = 0
+	}
+
+	var salesReports []models.SalesReports
+	adjustedDate := time.Now().AddDate(-years, -months, -days)
+	if err := initializers.DB.Preload("SalesReportItems").Where("date >= ?", adjustedDate).Order("date DESC").
+		Order("sales_report_id DESC").
+		Find(&salesReports).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, salesReports)
 }
 
 func DeletedSalesReport(c *gin.Context) {

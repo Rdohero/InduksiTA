@@ -64,6 +64,7 @@ func main() {
 	router.POST("/service", controllers.ServiceReport)
 	router.GET("/sales", controllers.GetSalesReport)
 	router.GET("/sales/day/last", controllers.GetSalesReportsLastDays)
+	router.GET("/sales/day/range", controllers.GetSalesReportsByDateRange)
 	router.GET("/service", controllers.GetServiceReport)
 	router.GET("/service/:id", controllers.GetServiceReportByUserID)
 	router.GET("/service/status/:id", controllers.GetServiceReportByStatusID)

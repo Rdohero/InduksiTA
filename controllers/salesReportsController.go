@@ -216,6 +216,33 @@ func GetSalesReportsLastDays(c *gin.Context) {
 	c.JSON(http.StatusOK, salesReports)
 }
 
+func GetSalesReportsByDateRange(c *gin.Context) {
+	startDateStr := c.Query("start_date")
+	endDateStr := c.Query("end_date")
+
+	startDate, err := time.Parse("2006-01-02", startDateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format. Use YYYY-MM-DD."})
+		return
+	}
+
+	endDate, err := time.Parse("2006-01-02", endDateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format. Use YYYY-MM-DD."})
+		return
+	}
+
+	var salesReports []models.SalesReports
+	if err := initializers.DB.Preload("SalesReportItems").Where("date BETWEEN ? AND ?", startDate, endDate).Order("date DESC").
+		Order("sales_report_id DESC").
+		Find(&salesReports).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, salesReports)
+}
+
 func DeletedSalesReport(c *gin.Context) {
 	id := c.Param("id")
 	var salesReport []models.SalesReports

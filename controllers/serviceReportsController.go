@@ -57,8 +57,8 @@ func ServiceReport(c *gin.Context) {
 	if create.Error == nil {
 		var Reports []models.ServiceReports
 		initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems").
-			Order("date ASC").
-			Order("service_report_id ASC").Find(&Reports)
+			Order("date DESC").
+			Order("service_report_id DESC").Find(&Reports)
 
 		c.JSON(http.StatusOK, gin.H{
 			"Succes": "Succes Create Service Report",
@@ -227,8 +227,8 @@ func GetServiceReport(c *gin.Context) {
 	var serviceReport []models.ServiceReports
 
 	initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
-		Order("date ASC").
-		Order("service_report_id ASC").
+		Order("date DESC").
+		Order("service_report_id DESC").
 		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -242,8 +242,8 @@ func GetServiceReportByStatusID(c *gin.Context) {
 	var serviceReport []models.ServiceReports
 
 	initializers.DB.Where("status_id = ?", id).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
-		Order("date ASC").
-		Order("service_report_id ASC").
+		Order("date DESC").
+		Order("service_report_id DESC").
 		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{

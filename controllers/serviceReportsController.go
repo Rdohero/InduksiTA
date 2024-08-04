@@ -5,6 +5,7 @@ import (
 	"InduksiTA/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -56,8 +57,8 @@ func ServiceReport(c *gin.Context) {
 	if create.Error == nil {
 		var Reports []models.ServiceReports
 		initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems").
-			Order("date DESC").
-			Order("service_report_id DESC").Find(&Reports)
+			Order("date ASC").
+			Order("service_report_id ASC").Find(&Reports)
 
 		c.JSON(http.StatusOK, gin.H{
 			"Succes": "Succes Create Service Report",
@@ -226,8 +227,8 @@ func GetServiceReport(c *gin.Context) {
 	var serviceReport []models.ServiceReports
 
 	initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
-		Order("date DESC").
-		Order("service_report_id DESC").
+		Order("date ASC").
+		Order("service_report_id ASC").
 		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -241,8 +242,8 @@ func GetServiceReportByStatusID(c *gin.Context) {
 	var serviceReport []models.ServiceReports
 
 	initializers.DB.Where("status_id = ?", id).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
-		Order("date DESC").
-		Order("service_report_id DESC").
+		Order("date ASC").
+		Order("service_report_id ASC").
 		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -256,12 +257,68 @@ func GetServiceReportByUserID(c *gin.Context) {
 	var serviceReport []models.ServiceReports
 
 	initializers.DB.Where("user_id = ? && status_id = ?", id, 1).Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").
-		Order("date DESC").
-		Order("service_report_id DESC").
+		Order("date ASC").
+		Order("service_report_id ASC").
 		Find(&serviceReport)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Success": "Success Getting Service Report",
 		"Data":    serviceReport,
 	})
+}
+
+func GetServiceReportsLastDays(c *gin.Context) {
+	daysStr := c.Query("days")
+	monthsStr := c.Query("months")
+	yearsStr := c.Query("years")
+
+	days, err := strconv.Atoi(daysStr)
+	if err != nil {
+		days = 0
+	}
+	months, err := strconv.Atoi(monthsStr)
+	if err != nil {
+		months = 0
+	}
+	years, err := strconv.Atoi(yearsStr)
+	if err != nil {
+		years = 0
+	}
+
+	var serviceReports []models.ServiceReports
+	adjustedDate := time.Now().AddDate(-years, -months, -days)
+	if err := initializers.DB.Preload("ServiceReportsItems").Where("date >= ?", adjustedDate).Order("date ASC").
+		Order("service_report_id ASC").
+		Find(&serviceReports).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, serviceReports)
+}
+
+func GetServiceReportsByDateRange(c *gin.Context) {
+	startDateStr := c.Query("start_date")
+	endDateStr := c.Query("end_date")
+
+	startDate, err := time.Parse("2006-01-02", startDateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format. Use YYYY-MM-DD."})
+		return
+	}
+
+	endDate, err := time.Parse("2006-01-02", endDateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format. Use YYYY-MM-DD."})
+		return
+	}
+
+	var serviceReports []models.ServiceReports
+	if err := initializers.DB.Preload("ServiceReportsItems").Where("date BETWEEN ? AND ?", startDate, endDate).Order("date ASC").
+		Order("service_report_id ASC").
+		Find(&serviceReports).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, serviceReports)
 }

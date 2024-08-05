@@ -324,7 +324,7 @@ func GetServiceReportsLastDays(c *gin.Context) {
 
 	var serviceReports []models.ServiceReports
 	adjustedDate := time.Now().AddDate(-years, -months, -days)
-	if err := initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Where("date >= ?", adjustedDate).Order("date DESC").
+	if err := initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Where("date >= ? && status_id = ?", adjustedDate, 2).Order("date DESC").
 		Order("service_report_id DESC").
 		Find(&serviceReports).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

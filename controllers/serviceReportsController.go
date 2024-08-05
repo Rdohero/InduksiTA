@@ -216,9 +216,46 @@ func EditServiceReport(c *gin.Context) {
 			"Success": "Successfully Edit Service Report",
 		})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": "Data Item Not Found",
-			"Data":  Service,
+		tx := initializers.DB.Begin()
+		if tx.Error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"Error": "Failed to start transaction",
+			})
+			return
+		}
+
+		var serviceReport models.ServiceReports
+
+		if err := tx.Where("service_report_id = ?", Service.ID).First(&serviceReport).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		if Service.Complaints != "" && Service.Complaints != serviceReport.Complaints {
+			serviceReport.Complaints = Service.Complaints
+		}
+
+		if Service.TotalPrice != 0 && Service.TotalPrice != serviceReport.TotalPrice {
+			serviceReport.TotalPrice = Service.TotalPrice
+		}
+
+		serviceReport.StatusID = 2
+
+		if err := tx.Save(&serviceReport).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update service data"})
+			return
+		}
+
+		if commitTransaction := tx.Commit().Error; commitTransaction != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"Error": "Failed to commit transaction",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"Success": "Successfully Edit Service Report",
 		})
 	}
 }
@@ -287,8 +324,8 @@ func GetServiceReportsLastDays(c *gin.Context) {
 
 	var serviceReports []models.ServiceReports
 	adjustedDate := time.Now().AddDate(-years, -months, -days)
-	if err := initializers.DB.Preload("ServiceReportsItems").Where("date >= ?", adjustedDate).Order("date ASC").
-		Order("service_report_id ASC").
+	if err := initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Where("date >= ?", adjustedDate).Order("date DESC").
+		Order("service_report_id DESC").
 		Find(&serviceReports).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -313,8 +350,8 @@ func GetServiceReportsByDateRange(c *gin.Context) {
 	}
 
 	var serviceReports []models.ServiceReports
-	if err := initializers.DB.Preload("ServiceReportsItems").Where("date BETWEEN ? AND ?", startDate, endDate).Order("date ASC").
-		Order("service_report_id ASC").
+	if err := initializers.DB.Preload("Status").Preload("User.Role").Preload("ServiceReportsItems.Categories").Where("date BETWEEN ? AND ?", startDate, endDate).Order("date DESC").
+		Order("service_report_id DESC").
 		Find(&serviceReports).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

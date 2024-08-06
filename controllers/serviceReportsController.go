@@ -3,6 +3,7 @@ package controllers
 import (
 	"InduksiTA/initializers"
 	"InduksiTA/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -121,7 +122,10 @@ func EditServiceReport(c *gin.Context) {
 
 		serviceReport.StatusID = 2
 
+		serviceReport.DateEnd = time.Now()
+
 		if err := tx.Save(&serviceReport).Error; err != nil {
+			fmt.Println(serviceReport.DateEnd)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update service data"})
 			return
 		}
@@ -240,6 +244,8 @@ func EditServiceReport(c *gin.Context) {
 		}
 
 		serviceReport.StatusID = 2
+
+		serviceReport.DateEnd = time.Now()
 
 		if err := tx.Save(&serviceReport).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update service data"})

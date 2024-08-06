@@ -46,6 +46,7 @@ func ServiceReport(c *gin.Context) {
 
 	Report := models.ServiceReports{
 		Date:        dateTime,
+		DateEnd:     nil,
 		Name:        Service.Name,
 		MachineName: Service.MachineName,
 		Complaints:  Service.Complaints,
@@ -122,7 +123,8 @@ func EditServiceReport(c *gin.Context) {
 
 		serviceReport.StatusID = 2
 
-		serviceReport.DateEnd = time.Now()
+		now := time.Now()
+		serviceReport.DateEnd = &now
 
 		if err := tx.Save(&serviceReport).Error; err != nil {
 			fmt.Println(serviceReport.DateEnd)
@@ -245,7 +247,8 @@ func EditServiceReport(c *gin.Context) {
 
 		serviceReport.StatusID = 2
 
-		serviceReport.DateEnd = time.Now()
+		now := time.Now()
+		serviceReport.DateEnd = &now
 
 		if err := tx.Save(&serviceReport).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update service data"})

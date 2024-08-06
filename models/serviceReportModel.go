@@ -9,7 +9,7 @@ type ServiceReports struct {
 	MachineName         string                `json:"machine_name"`
 	Complaints          string                `json:"complaints"`
 	TotalPrice          int                   `json:"total_price"`
-	DateEnd             time.Time             `json:"date_end"`
+	DateEnd             *time.Time            `json:"date_end"`
 	StatusID            uint                  `json:"status_id"`
 	UserID              uint                  `json:"user_id"`
 	Status              Status                `gorm:"foreignKey:StatusID;references:StatusID"`

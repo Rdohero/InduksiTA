@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -25,6 +27,23 @@ func ServiceReport(c *gin.Context) {
 		})
 		return
 	}
+
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	allowedMIMETypes := []string{"image/jpeg", "image/png", "image/svg"}
+
+	if !IsValidMIMEType(file, allowedMIMETypes) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Hanya menerima jpeg, png, dan svg"})
+		return
+	}
+	basePath := filepath.Join("images", file.Filename)
+	os.MkdirAll("images", os.ModePerm)
+	filePath := generateUniqueFileName(basePath)
+	c.SaveUploadedFile(file, filePath)
 
 	parsedDate, err := time.Parse("2006-01-02", Service.Date)
 	if err != nil {
@@ -47,6 +66,7 @@ func ServiceReport(c *gin.Context) {
 	Report := models.ServiceReports{
 		Date:        dateTime,
 		DateEnd:     nil,
+		Image:       "https://rdo-app-o955y.ondigitalocean.app/" + filePath,
 		Name:        Service.Name,
 		MachineName: Service.MachineName,
 		Complaints:  Service.Complaints,

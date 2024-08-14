@@ -3,7 +3,6 @@ package controllers
 import (
 	"InduksiTA/initializers"
 	"InduksiTA/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -33,9 +32,6 @@ func Register(c *gin.Context) {
 
 		return
 	}
-
-	fmt.Println(c.ShouldBind(&body))
-	fmt.Println(body)
 
 	checkPassword := checkPasswordCriteria(body.Password)
 	if checkPassword != nil {

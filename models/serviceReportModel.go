@@ -5,6 +5,7 @@ import "time"
 type ServiceReports struct {
 	ServiceReportID     uint                  `gorm:"primarykey" json:"service_report_id"`
 	Date                time.Time             `json:"date"`
+	Image               string                `form:"image" json:"image"`
 	Name                string                `json:"name"`
 	MachineName         string                `json:"machine_name"`
 	Complaints          string                `json:"complaints"`

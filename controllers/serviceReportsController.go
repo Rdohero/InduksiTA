@@ -14,17 +14,18 @@ import (
 
 func ServiceReport(c *gin.Context) {
 	var Service struct {
-		Date        string `json:"date"`
-		UserID      uint   `json:"user_id"`
-		Name        string `json:"name"`
-		MachineName string `json:"machine_name"`
-		Complaints  string `json:"complaints"`
+		Date        string `json:"date" form:"date"`
+		UserID      uint   `json:"user_id" form:"user_id"`
+		Name        string `json:"name" form:"name"`
+		MachineName string `json:"machine_name" form:"machine_name"`
+		Complaints  string `json:"complaints" form:"complaints"`
 	}
 
-	if err := c.BindJSON(&Service); err != nil {
+	if c.ShouldBind(&Service) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": err.Error(),
+			"Error": "Failed to read body",
 		})
+
 		return
 	}
 

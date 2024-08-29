@@ -260,3 +260,21 @@ func DeletedSalesReport(c *gin.Context) {
 		})
 	}
 }
+
+func SearchSales(c *gin.Context) {
+	orderId := c.Query("order_id")
+
+	var salesReports []models.SalesReports
+
+	if err := initializers.DB.Preload("SalesReportItems.Categories").Where("sales_report_id = ?", orderId).Find(&salesReports).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err})
+		return
+	}
+
+	if ranges := len(salesReports); ranges == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Sales report Tidak Ditemukan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, salesReports)
+}

@@ -74,7 +74,7 @@ func Register(c *gin.Context) {
 
 		if result.Error != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"Error": "Error",
+				"Error": result.Error,
 			})
 
 			return

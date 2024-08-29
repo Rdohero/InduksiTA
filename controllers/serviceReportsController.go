@@ -389,3 +389,21 @@ func GetServiceReportsByDateRange(c *gin.Context) {
 
 	c.JSON(http.StatusOK, serviceReports)
 }
+
+func SearchService(c *gin.Context) {
+	orderId := c.Query("order_id")
+
+	var serviceReports []models.ServiceReports
+
+	if err := initializers.DB.Preload("ServiceReportsItems.Categories").Preload("Status").Preload("User.Role").Where("service_report_id = ?", orderId).Find(&serviceReports).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err})
+		return
+	}
+
+	if ranges := len(serviceReports); ranges == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Service Tidak Ditemukan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, serviceReports)
+}

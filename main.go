@@ -79,6 +79,8 @@ func main() {
 
 	search.GET("/machine", controllers.SearchMachine)
 	search.GET("/sparePart", controllers.SearchSparePart)
+	search.GET("/sales", controllers.SearchSales)
+	search.GET("/service", controllers.SearchService)
 
 	router.GET("/update-stock", func(c *gin.Context) {
 		stockStr := c.Query("stock")

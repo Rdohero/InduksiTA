@@ -19,7 +19,7 @@ import (
 
 func GetAllUser(c *gin.Context) {
 	var user []models.User
-	if err := initializers.DB.Preload("Role").Find(&user).Error; err != nil {
+	if err := initializers.DB.Preload("Role").Where("is_deleted = ?", 0).Find(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
@@ -40,8 +40,6 @@ func DeletedUser(c *gin.Context) {
 		return
 	}
 
-	os.Remove(user.Image)
-
 	if result.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"Error": "User yang ingin dihapus tidak ditemukan",
@@ -49,7 +47,7 @@ func DeletedUser(c *gin.Context) {
 		return
 	}
 
-	initializers.DB.Where("user_id = ?", id).Delete(&user)
+	initializers.DB.Model(&user).Where("user_id = ?", id).Update("is_deleted", 1)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "User telah terhapus",

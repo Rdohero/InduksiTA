@@ -56,28 +56,37 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Hanya menerima jpeg, png, dan svg"})
 		return
 	}
-	basePath := filepath.Join("images", file.Filename)
-	os.MkdirAll("images", os.ModePerm)
-	filePath := generateUniqueFileName(basePath)
-	c.SaveUploadedFile(file, filePath)
 
 	if checkPassword == nil {
-		user := models.User{
-			Username:    body.Username,
-			Password:    string(hash),
-			Address:     body.Address,
-			NoHandphone: body.NoHandphone,
-			Image:       filePath,
-			RoleID:      body.Role,
-		}
-		result := initializers.DB.Create(&user)
+		var username []models.User
 
-		if result.Error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"Error": result.Error,
-			})
+		initializers.DB.Where("username = ? && is_deleted = ?", body.Username, 1).Find(&username)
 
-			return
+		if len(username) != 0 {
+			initializers.DB.Model(&username).Where("username = ?", body.Username).Update("is_deleted", 0)
+		} else {
+			basePath := filepath.Join("images", file.Filename)
+			os.MkdirAll("images", os.ModePerm)
+			filePath := generateUniqueFileName(basePath)
+			c.SaveUploadedFile(file, filePath)
+			user := models.User{
+				Username:    body.Username,
+				Password:    string(hash),
+				Address:     body.Address,
+				NoHandphone: body.NoHandphone,
+				Image:       filePath,
+				RoleID:      body.Role,
+			}
+			result := initializers.DB.Create(&user)
+
+			if result.Error != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"Error": result.Error,
+				})
+				os.Remove(filePath)
+
+				return
+			}
 		}
 
 		c.JSON(http.StatusOK, gin.H{

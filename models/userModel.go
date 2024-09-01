@@ -8,5 +8,6 @@ type User struct {
 	Address     string `json:"address"`
 	NoHandphone string `json:"no_handphone"`
 	RoleID      uint   `json:"role_id"`
+	IsDeleted   bool   `json:"is_deleted"`
 	Role        Role
 }

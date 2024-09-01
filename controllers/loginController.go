@@ -25,7 +25,7 @@ func Login(c *gin.Context) {
 	}
 
 	var user models.User
-	initializers.DB.First(&user, "username = ?", body.Username)
+	initializers.DB.First(&user, "username = ? && is_deleted = ?", body.Username, 0)
 
 	errPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
@@ -60,7 +60,7 @@ func LoginOwner(c *gin.Context) {
 	}
 
 	var user models.User
-	initializers.DB.First(&user, "username = ?", body.Username)
+	initializers.DB.First(&user, "username = ? && is_deleted = ?", body.Username, 0)
 
 	errPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 

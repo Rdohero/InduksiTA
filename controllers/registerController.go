@@ -63,7 +63,19 @@ func Register(c *gin.Context) {
 		initializers.DB.Where("username = ? && is_deleted = ?", body.Username, 1).Find(&username)
 
 		if len(username) != 0 {
-			initializers.DB.Model(&username).Where("username = ?", body.Username).Update("is_deleted", 0)
+			basePath := filepath.Join("images", file.Filename)
+			os.MkdirAll("images", os.ModePerm)
+			filePath := generateUniqueFileName(basePath)
+			c.SaveUploadedFile(file, filePath)
+			initializers.DB.Model(&username).Where("username = ?", body.Username).Updates(map[string]interface{}{
+				"is_deleted":   0,
+				"username":     body.Username,
+				"password":     string(hash),
+				"address":      body.Address,
+				"no_handphone": body.NoHandphone,
+				"image":        filePath,
+				"role_id":      body.Role,
+			})
 		} else {
 			basePath := filepath.Join("images", file.Filename)
 			os.MkdirAll("images", os.ModePerm)

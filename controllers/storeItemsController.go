@@ -125,7 +125,7 @@ func EditStoreItems(c *gin.Context) {
 		items.StoreItemsName = storeItems.StoreItemsName
 	}
 
-	if storeItems.Quantity != 0 && storeItems.Quantity != items.Quantity {
+	if storeItems.Quantity != items.Quantity {
 		items.Quantity = storeItems.Quantity
 	}
 

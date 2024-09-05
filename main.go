@@ -76,11 +76,14 @@ func main() {
 	router.GET("/status", controllers.GetStatus)
 
 	search := router.Group("search")
+	preOrder := router.Group("preOrder")
 
 	search.GET("/machine", controllers.SearchMachine)
 	search.GET("/sparePart", controllers.SearchSparePart)
 	search.GET("/sales", controllers.SearchSales)
 	search.GET("/service", controllers.SearchService)
+	preOrder.POST("/store/items", controllers.PreOrderStoreItems)
+	preOrder.POST("/spare/part", controllers.PreOrderSparePart)
 
 	router.GET("/update-stock", func(c *gin.Context) {
 		stockStr := c.Query("stock")

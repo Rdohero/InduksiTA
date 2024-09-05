@@ -3,6 +3,7 @@ package controllers
 import (
 	"InduksiTA/initializers"
 	"InduksiTA/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,6 +16,50 @@ func GetStoreItems(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"Succes": "Succes Getting Store Items",
 		"Data":   storeItems,
+	})
+}
+
+func PreOrderStoreItems(c *gin.Context) {
+	var storeItems struct {
+		StoreItemsID int `json:"store_items_id"`
+		Quantity     int `json:"quantity"`
+		Price        int `json:"Price"`
+	}
+
+	if err := c.BindJSON(&storeItems); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Error": err.Error(),
+		})
+		return
+	}
+
+	var store models.StoreItems
+	if err := initializers.DB.Where("store_items_id = ?", storeItems.StoreItemsID).First(&store).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Store Items not found"})
+		return
+	}
+
+	if store.Price != storeItems.Price && storeItems.Price != 0 {
+		newPrice := storeItems.Price * storeItems.Quantity
+		oldPrice := store.Price * store.Quantity
+		totalQuantity := store.Quantity + storeItems.Quantity
+		store.Price = (newPrice + oldPrice) / totalQuantity
+		store.Quantity = totalQuantity
+		fmt.Println(store.Price)
+		fmt.Println(store.Quantity)
+	} else {
+		store.Quantity = store.Quantity + storeItems.Quantity
+		fmt.Println(store.Quantity)
+
+	}
+
+	if err := initializers.DB.Save(&store).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update Store Items"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Store Items Pre Order successfully",
 	})
 }
 

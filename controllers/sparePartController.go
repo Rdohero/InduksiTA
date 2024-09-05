@@ -18,6 +18,46 @@ func GetSparePart(c *gin.Context) {
 	})
 }
 
+func PreOrderSparePart(c *gin.Context) {
+	var sparePart struct {
+		SparePartID int `json:"spare_part_id"`
+		Quantity    int `json:"quantity"`
+		Price       int `json:"price"`
+	}
+
+	if err := c.BindJSON(&sparePart); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Error": err.Error(),
+		})
+		return
+	}
+
+	var spare models.SparePart
+	if err := initializers.DB.Where("spare_part_id = ?", sparePart.SparePartID).First(&spare).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Spare Part not found"})
+		return
+	}
+
+	if spare.Price != sparePart.Price && sparePart.Price != 0 {
+		newPrice := sparePart.Price * sparePart.Quantity
+		oldPrice := spare.Price * spare.Quantity
+		totalQuantity := spare.Quantity + sparePart.Quantity
+		spare.Price = (newPrice + oldPrice) / totalQuantity
+		spare.Quantity = totalQuantity
+	} else {
+		spare.Quantity = spare.Quantity + sparePart.Quantity
+	}
+
+	if err := initializers.DB.Save(&spare).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update Spare Part"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Spare Part Pre Order successfully",
+	})
+}
+
 func SparePart(c *gin.Context) {
 	var sparePart struct {
 		SparePartName string `json:"spare_part_name"`

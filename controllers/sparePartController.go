@@ -120,7 +120,7 @@ func EditSparePart(c *gin.Context) {
 		spare.SparePartName = sparePart.SparePartName
 	}
 
-	if sparePart.Quantity != 0 && sparePart.Quantity != spare.Quantity {
+	if sparePart.Quantity != spare.Quantity {
 		spare.Quantity = sparePart.Quantity
 	}
 
